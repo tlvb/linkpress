@@ -1,0 +1,52 @@
+=encoding utf8
+
+=head1 what does linkpress.pl do?
+
+=over
+
+=item C<1> traverse directories
+
+=item C<2> group files by their device number and inode
+
+=item C<3> if a group has least one file that matches the given regex
+
+=item C<4> remove all but one of the files
+
+=item C<5> compress the remaining file
+
+=item C<6> link the compressed file to the places where the now removed files were
+
+=back
+
+E.g, if C<tree -i --inodes somedir> turn up something like:
+
+	somedir
+	├── [ 142995]  subdir1
+	│   ├── [ 143761]  X.huge
+	│   ├── [ 143763]  Y.huge
+	│   ├── [ 144482]  Z.huge
+	│   └── [ 141938]  foo
+	└── [ 142996]  subdir2
+		├── [ 143761]  X.huge
+		├── [ 143763]  Y.huge.bak
+		└── [ 141940]  bar
+
+	2 directories, 7 files
+
+You might after running C<perl linkpress.pl '\.huge$' somedir>
+end up with a tree looking like:
+
+	somedir
+	├── [ 142995]  subdir1
+	│   ├── [ 143159]  X.huge.bz2
+	│   ├── [ 143160]  Y.huge.bz2
+	│   ├── [ 143161]  Z.huge.bz2
+	│   └── [ 141938]  foo
+	└── [ 142996]  subdir2
+		├── [ 143159]  X.huge.bz2
+		├── [ 143160]  Y.huge.bak.bz2
+		└── [ 141940]  bar
+
+	2 directories, 7 files
+
+=cut
